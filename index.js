@@ -1,6 +1,6 @@
 const express = require('express')
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 const app = express()
 const port = process.env.PORT || 5000;
@@ -51,7 +51,7 @@ const run = async () => {
           else {
             res.status(403).send({ message: 'forbidden' });
           }
-      }
+        }
       
 
       /**  
@@ -109,6 +109,13 @@ const run = async () => {
         }
       })
 
+      app.get('/booking/:id',verifyJWT, async (req, res) => {
+        const id = req.params.id;
+        const filter = { _id: ObjectId(id) };
+        const result = await bookingCollection.findOne(filter);
+        res.send(result);
+      })
+
       app.get('/admin/:email', async (req, res) => {
         const email = req.params.email;
         const user = await userCollection.findOne({ email: email });
@@ -123,7 +130,7 @@ const run = async () => {
 
 
 
-      /* ------------------------------------------------- all app.put --------------------------------------------------- */
+      /* --------------------------------------------- all app.put ----------------------------------------- */
       app.put('/user/admin/:email', verifyJWT,verifyAdmin, async (req, res) => {
         const email = req.params.email;
           const filter = { email: email };
@@ -154,7 +161,7 @@ const run = async () => {
       })
       
 
-      /* -------------------------------------------------- all app.post ----------------------------------------------------*/
+      /* ----------------------------------------- all app.post ----------------------------------------------*/
 
       // add booking data
       app.post('/booking', async (req, res) => {
@@ -198,7 +205,7 @@ run().catch(console.dir)
 app.get('/', (req, res) => {
   res.send('Welcome to doctor portal')
 })
-
+!
 app.listen(port, () => {
   console.log(`Doctor portal server is running from ${port}`)
 })
